@@ -1,7 +1,5 @@
-
-transformers
-torch
+transformers==4.35.2
+torch==2.1.0
 pinecone-client[grpc]==2.2.1
-pinecone-datasets==0.5.0rc11
-sentence-transformers==2.2.2
+
 

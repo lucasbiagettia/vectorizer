@@ -4,15 +4,12 @@ model = RobertaModel.from_pretrained('PlanTL-GOB-ES/roberta-base-bne')
 
 import torch
 
-# Check if GPU is available and set the device accordingly
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ... (previous code remains unchanged)
 
-# Move the model to the GPU
 model.to(device)
 
-import torch
+
 def get_embedding(text):
   tokens = tokenizer( text,return_tensors="pt", padding=True, truncation=True).to(device)
 
@@ -96,14 +93,11 @@ d2v = data2vector2(data)
 
 csv_file_path = 'result_list3.csv'
 
-# Write result_list to CSV file
 with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
     csv_writer = csv.writer(csvfile)
 
-    # Write header
     csv_writer.writerow(['metadata', 'embedding'])
 
-    # Write data
     csv_writer.writerows(d2v)
 
 print(f'Results written to {csv_file_path}')
