@@ -1,12 +1,23 @@
 import pinecone
+import itertools
 
 class PineconeIndexer:
-    def __init__(self, api_key, environment, index_name='borges'):
+    def __init__(self, api_key, environment, index_name):
         pinecone.init(api_key=api_key, environment=environment)
         self.index = pinecone.Index(index_name)
 
-    def upsert_vectors(self, vectors):
-        self.index.upsert(vectors=vectors)
+    def chunks(self, iterable, batch_size=100):
+        """A helper function to break an iterable into chunks of size batch_size."""
+        it = iter(iterable)
+        chunk = tuple(itertools.islice(it, batch_size))
+        while chunk:
+            yield chunk
+            chunk = tuple(itertools.islice(it, batch_size))
+            
 
-    def query_index(self, query_vector, top_k=5, include_metadata=True):
-        return self.index.query(query_vector, top_k=top_k, include_metadata=include_metadata)
+    def upsert_data(self, data, batch_size=100):
+        for ids_vectors_chunk in self.chunks(data, batch_size):
+            self.index.upsert(vectors=ids_vectors_chunk)
+
+# Uso de la clase
+
