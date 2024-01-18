@@ -22,7 +22,7 @@ def get_embedding(text):
 
 import csv
 
-csv_file = '/content/borges_metadata_text.csv'
+csv_file = 'C:/Users/Notebook/Documents/Lucas/Programación/gitProjects/vectorizer/sample_data/borges_metadata_text.csv'
 
 
 

@@ -40,12 +40,14 @@ class DataProcessor:
         return json.dumps(json_data).replace('"', "'")
 
 
+
     @staticmethod
     def data2vector2(data, vectorizer):
         result_list = []
-          for metadata, text in tqdm.tqdm(data, desc="Processing data"):
-            chunks = split_into_batches(text)
+        for metadata, text in tqdm.tqdm(data, desc="Processing data"):
+            chunks = DataProcessor.split_into_batches(text)  # Use the class name
             for chunk in chunks:
-                result_list.append((add_field_to_json(metadata, chunk), get_embedding(chunk)))
+                result_list.append((DataProcessor.add_field_to_json(metadata, chunk), vectorizer.get_embedding(chunk)))  # Use the class name
 
         return result_list
+
