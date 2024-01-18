@@ -19,5 +19,8 @@ class PineconeIndexer:
         for ids_vectors_chunk in self.chunks(data, batch_size):
             self.index.upsert(vectors=ids_vectors_chunk)
 
+    def query (self, embedding, top_k):
+        return self.index.query(embedding, top_k = top_k, include_metadata=True)
+
 # Uso de la clase
 
