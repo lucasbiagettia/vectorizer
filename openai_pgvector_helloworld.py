@@ -7,7 +7,7 @@ from psycopg2.extras import execute_values
 from pgvector.psycopg2 import register_vector
 
 
-dbname = 'vectorPoC'
+dbname = 'vector2'
 user = 'postgres'
 password = 'pochovive'
 host = 'localhost'
@@ -17,7 +17,7 @@ conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, 
 cur = conn.cursor()
 
 #install pgvector
-cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
+cur.execute("CREATE EXTENSION IF NOT EXISTS pgvector")
 conn.commit()
 
 # Register the vector type with psycopg2
