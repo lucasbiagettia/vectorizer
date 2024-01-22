@@ -1,5 +1,8 @@
 transformers==4.35.2
 torch==2.1.0
 pinecone-client[grpc]==2.2.1
+pandas
+psycopg2
+pgvector
 
 

@@ -7,17 +7,17 @@ from psycopg2.extras import execute_values
 from pgvector.psycopg2 import register_vector
 
 
-dbname = 'vector2'
+dbname = 'vectorpoc'
 user = 'postgres'
 password = 'pochovive'
 host = 'localhost'
-port = '5433'
+port = '5432'
 
 conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
 cur = conn.cursor()
 
 #install pgvector
-cur.execute("CREATE EXTENSION IF NOT EXISTS pgvector")
+cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
 conn.commit()
 
 # Register the vector type with psycopg2
@@ -42,8 +42,8 @@ cur = conn.cursor()
 
 
 
-data = {'title': ['Documento 1', 'Documento 2', 'Documento 3', 'Documento 4', 'Documento 5'],
-        'embeddings': [np.random.rand(10), np.random.rand(10), np.random.rand(10), np.random.rand(10), np.random.rand(10)]}
+data = {'title': ['Documento 126', 'Documento 12', 'Documento 13', 'Documento 14', 'Documento 15'],
+        'embeddings': [np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), np.random.rand(10), np.random.rand(10), np.random.rand(10), np.random.rand(10)]}
 
 df_new = pd.DataFrame(data)
 
