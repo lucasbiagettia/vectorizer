@@ -14,7 +14,6 @@ column_names = ['text_metadata', 'text']
 data_processor = DataProcessor(csv_file, column_names, embedding_model)
 d2v = data_processor.data2vector2(data_processor.order_data())
 
-print(d2v[0][0])
 dbname = 'vectorpoc'
 
 
