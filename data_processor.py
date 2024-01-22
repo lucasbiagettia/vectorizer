@@ -1,6 +1,8 @@
 import json
 import csv
 import tqdm
+import re
+
 
 class DataProcessor:
     def __init__(self, csv_file, column_names, embedding_model):
@@ -10,13 +12,48 @@ class DataProcessor:
 
 
     
-    def split_into_batches(self, text, words_per_batch=50):
+    def split_into_batches(self, text, words_per_batch=70):
         embeds =[]
         words = text.split()
         for i in range(0, len(words), words_per_batch):
             batch = " ".join(words[i:i+words_per_batch])
             embeds.append(batch)
         return embeds
+   
+    def split_into_batches_EOL(self, text):
+        embeds = []
+        lines = text.split('\n')
+        for line in lines:
+            embeds.append(line.strip()) 
+        print("batches: ", len(embeds))
+        return embeds
+    def split_sentences(self, text):
+        regex = re.compile(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
+        sentences = regex.split(text)
+
+        processed_sentences = []
+
+        current_word_count = 0
+
+        for sentence in sentences:
+            words = sentence.split()
+            num_words_sentence = len(words)
+
+            if num_words_sentence >= 20:
+                processed_sentences.append(sentence)
+                current_word_count = 0
+            else:
+                if processed_sentences:
+                    processed_sentences[-1] += ' ' + sentence
+                    current_word_count += num_words_sentence
+                else:
+                    processed_sentences.append(sentence)
+                    current_word_count = num_words_sentence
+
+        if len(processed_sentences[-1].split()) < 20:
+            processed_sentences.pop()
+        return processed_sentences
+
 
         
     def add_field_to_json(self, json_str, value):
@@ -25,7 +62,7 @@ class DataProcessor:
         del json_data['link']
         del json_data['author']
         del json_data['metadata']
-        return json.dumps(json_data).replace('"', "'")
+        return json.dumps(json_data, ensure_ascii=False)
 
     def order_data(self):
         result_list = []
@@ -53,7 +90,7 @@ class DataProcessor:
     def data2vector2(self, data):
         result_list = []
         for metadata, text in tqdm.tqdm(data, desc="Processing data"):
-            chunks = self.split_into_batches(text)
+            chunks = self.split_sentences(text)
             for chunk in chunks:
                 result_list.append((self.add_field_to_json(metadata, chunk), self.get_embedding(chunk)))
 

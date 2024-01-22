@@ -20,6 +20,7 @@ class EmbeddingModel:
         return cls._instance
 
     def get_embedding(self, text):
+      
         tokens = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.device)
 
         with torch.no_grad():

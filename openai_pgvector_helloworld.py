@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import psycopg2
-import pgvector
 import math
 from psycopg2.extras import execute_values
 from pgvector.psycopg2 import register_vector
