@@ -1,9 +1,4 @@
 import json
-import unicodedata
-import numpy as np
-import pandas as pd
-from data_processor import DataProcessor
-from pinecone_indexer import PineconeIndexer
 from posgres_writer import DatabaseManager
 from vectorizer import EmbeddingModel
 
