@@ -1,5 +1,5 @@
 import json
-from posgres_writer import PosgresManager
+from db_manager import PosgresManager
 from vectorizer import EmbeddingModel
 
 embedding_model = EmbeddingModel()
@@ -10,7 +10,7 @@ dbname = 'vectorpoc'
 
 db_manager = PosgresManager(dbname)
 db_manager.connect()
-table_name = "borges2"
+table_name = "marx2"
 user_inp = ""
 
 def decode_json(result):
@@ -22,12 +22,19 @@ def decode_json(result):
             print ("texto")
             print (json_object['chunk'])
 
-while user_inp != "fin":
-    user_inp = input("Que quieres leer: ")
+def create_json(main_text, context_texts):
+    result = {"pregunta": main_text, "contexto": context_texts}
+    json_result = json.dumps(result, indent=2, ensure_ascii=False)
+    return json_result
+
+while True:
+    user_inp = input("Que quieres saber: ")
+    if user_inp == 'fin':
+        break
     embedding = embedding_model.get_embedding(user_inp)
     sim_docs = db_manager.get_similar_docs(embedding, 5, table_name)
-    decode_json(sim_docs)
-
+    json_result = create_json(user_inp, sim_docs) 
+    print(json_result)
 
 db_manager.close_connection()
 

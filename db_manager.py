@@ -54,7 +54,8 @@ class PosgresManager:
         self.cur.execute(query, (embedding_array, number))
         
         top_docs = self.cur.fetchall()
-        return top_docs
+        text_top_docs = [doc[0] for doc in top_docs]
+        return text_top_docs
 
 
     def close_connection(self):
@@ -64,7 +65,7 @@ class PosgresManager:
             self.conn.close()
 
 
-class PineconeIndexer:
+class PineconeManager:
     def __init__(self, api_key, environment, index_name):
         pinecone.init(api_key=api_key, environment=environment)
         self.index = pinecone.Index(index_name)
