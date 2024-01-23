@@ -1,5 +1,5 @@
 import json
-from posgres_writer import DatabaseManager
+from posgres_writer import PosgresManager
 from vectorizer import EmbeddingModel
 
 embedding_model = EmbeddingModel()
@@ -8,7 +8,7 @@ embedding_model = EmbeddingModel()
 dbname = 'vectorpoc'
 
 
-db_manager = DatabaseManager(dbname)
+db_manager = PosgresManager(dbname)
 db_manager.connect()
 table_name = "borges2"
 user_inp = ""

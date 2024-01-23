@@ -1,38 +1,22 @@
 import json
 import csv
+import PyPDF2
 import tqdm
 import re
+import pandas as pd
 
 
-class DataProcessor:
+class CsvProcessor:
     def __init__(self, csv_file, column_names, embedding_model):
         self.csv_file = csv_file
         self.column_names = column_names
         self.embedding_model = embedding_model
 
 
-    
-    def split_into_batches(self, text, words_per_batch=70):
-        embeds =[]
-        words = text.split()
-        for i in range(0, len(words), words_per_batch):
-            batch = " ".join(words[i:i+words_per_batch])
-            embeds.append(batch)
-        return embeds
-   
-    def split_into_batches_EOL(self, text):
-        embeds = []
-        lines = text.split('\n')
-        for line in lines:
-            embeds.append(line.strip()) 
-        print("batches: ", len(embeds))
-        return embeds
     def split_sentences(self, text):
         regex = re.compile(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
         sentences = regex.split(text)
-
         processed_sentences = []
-
         current_word_count = 0
 
         for sentence in sentences:
@@ -54,7 +38,6 @@ class DataProcessor:
             processed_sentences.pop()
         return processed_sentences
 
-
         
     def add_field_to_json(self, json_str, value):
         json_data = json.loads(json_str)
@@ -73,7 +56,6 @@ class DataProcessor:
 
             if all(column in header for column in self.column_names):
                 for i, row in enumerate(csv_reader):
-
                     values = [row[header.index(column)] for column in self.column_names]
                     result_list.append(tuple(values))
             else:
@@ -83,11 +65,8 @@ class DataProcessor:
 
     def get_embedding(self, text):
         return self.embedding_model.get_embedding(text)
-
- 
-    
-    
-    def data2vector2(self, data):
+   
+    def data2vector(self, data):
         result_list = []
         for metadata, text in tqdm.tqdm(data, desc="Processing data"):
             chunks = self.split_sentences(text)
@@ -95,6 +74,66 @@ class DataProcessor:
                 result_list.append((self.add_field_to_json(metadata, chunk), self.get_embedding(chunk)))
 
         return result_list
+    
+    def data_to_dataframe(self, d2v):
+        df = pd.DataFrame(columns=['title', 'embeddings'])
+        for text, embed in d2v:
+            df = pd.concat([df, pd.DataFrame({'title': [text], 'embeddings': [embed]})], ignore_index=True)
+        return df
+
+    
+    def get_processed_data(self):
+        ordered_data = self.order_data()
+        d2v = self.data2vector(ordered_data)
+        df = self.data_to_dataframe(d2v)
+        return df
+    
+
+class TxtProcessor:
+    def __init__(self, pdf_file, embedding_model):
+        self.pdf_file = pdf_file
+        self.embedding_model = embedding_model
+        
+    def read_pdf(self):
+        with open(self.pdf_file, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            
+            pdf_content = ""
+            for page_number in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page_number]
+                text_page = page.extract_text()
+                pdf_content += text_page
+            
+            return pdf_content
+        
+    def split_into_batches(self, text, words_per_batch=100):
+        words = text.split()
+        batches = []
+
+        for i in range(0, len(words), words_per_batch):
+            batch = words[i:i + words_per_batch]
+            batches.append(' '.join(batch))
+
+        return batches
+    
+    def add_to_json (self, text):
+        json_result = {'chunk': text}
+        return json.dumps(json_result)
+    
+    def data_to_dataframe(self, batches):
+        df = pd.DataFrame(columns=['title', 'embeddings'])
+        for batch in batches:
+            df = pd.concat([df, pd.DataFrame({'title': [batch], 'embeddings': [self.embedding_model.get_embedding(batch)]})], ignore_index=True)
+
+        # for batch in tqdm(batches, desc="Processing batches", unit="batch"):
+        #     df = pd.concat([df, pd.DataFrame({'title': [batch], 'embeddings': [self.embedding_model.get_embedding(batch)]})], ignore_index=True)
+        return df
+    
+    def get_processed_data(self):
+        text = self.read_pdf()
+        batches = self.split_into_batches(text)
+        df = self.data_to_dataframe(batches)
+        return df
 
 
 

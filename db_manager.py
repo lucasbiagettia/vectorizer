@@ -5,7 +5,10 @@ import psycopg2
 from psycopg2.extras import execute_values
 from pgvector.psycopg2 import register_vector
 
-class DatabaseManager:
+import pinecone
+import itertools
+
+class PosgresManager:
     def __init__(self, dbname):
         self.dbname = dbname
         self.user = os.environ.get('DB_USER')
@@ -60,20 +63,24 @@ class DatabaseManager:
         if self.conn:
             self.conn.close()
 
-# dbname = 'vectorpoc'
 
+class PineconeIndexer:
+    def __init__(self, api_key, environment, index_name):
+        pinecone.init(api_key=api_key, environment=environment)
+        self.index = pinecone.Index(index_name)
 
-# db_manager = DatabaseManager(dbname)
-# db_manager.connect()
-# db_manager.create_extension()
-# dim = 30
-# db_manager.create_table("prueba", dim)
+    def chunks(self, iterable, batch_size=100):
+        """A helper function to break an iterable into chunks of size batch_size."""
+        it = iter(iterable)
+        chunk = tuple(itertools.islice(it, batch_size))
+        while chunk:
+            yield chunk
+            chunk = tuple(itertools.islice(it, batch_size))
+            
 
-# data = {'title': ['Documento 1223213'],
-#         'embeddings': [np.random.rand(dim)]}
+    def upsert_data(self, data, batch_size=100):
+        for ids_vectors_chunk in self.chunks(data, batch_size):
+            self.index.upsert(vectors=ids_vectors_chunk)
 
-# df_new = pd.DataFrame(data)
-
-# db_manager.insert_data(df_new, "prueba")
-
-# db_manager.close_connection()
+    def query (self, embedding, top_k):
+        return self.index.query(embedding, top_k = top_k, include_metadata=True)
