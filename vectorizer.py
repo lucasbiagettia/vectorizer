@@ -29,3 +29,6 @@ class EmbeddingModel:
         embedding = output.last_hidden_state[:, 0, :]
 
         return embedding.tolist()[0]
+    
+    def get_hidden_size(self):
+        return self.model.config.hidden_size
