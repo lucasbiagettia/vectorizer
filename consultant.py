@@ -1,5 +1,6 @@
 import json
 from db_manager import PosgresManager
+from inference_model.answer_generator import ConversationalAgent
 from vectorizer import EmbeddingModel
 
 embedding_model = EmbeddingModel()
@@ -10,7 +11,7 @@ dbname = 'vectorpoc'
 
 db_manager = PosgresManager(dbname)
 db_manager.connect()
-table_name = "marx2"
+table_name = "marx"
 user_inp = ""
 
 def decode_json(result):
@@ -33,8 +34,9 @@ while True:
         break
     embedding = embedding_model.get_embedding(user_inp)
     sim_docs = db_manager.get_similar_docs(embedding, 5, table_name)
-    json_result = create_json(user_inp, sim_docs) 
-    print(json_result)
+    agent = ConversationalAgent()
+    ans = agent.answer_question(user_inp, sim_docs)
+    print(ans)
 
 db_manager.close_connection()
 

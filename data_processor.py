@@ -52,8 +52,7 @@ class CsvProcessor:
 
         with open(self.csv_file, 'r', newline='', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
-            header = next(csv_reader)  # Read the header
-
+            header = next(csv_reader) 
             if all(column in header for column in self.column_names):
                 for i, row in enumerate(csv_reader):
                     values = [row[header.index(column)] for column in self.column_names]

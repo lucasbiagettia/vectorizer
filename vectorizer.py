@@ -8,6 +8,9 @@ class EmbeddingModel:
         if cls._instance is None:
             tokenizer = RobertaTokenizer.from_pretrained('PlanTL-GOB-ES/roberta-base-bne')
             model = RobertaModel.from_pretrained('PlanTL-GOB-ES/roberta-base-bne')
+            directorio_guardado = "model"
+            model.save_pretrained(directorio_guardado)
+            tokenizer.save_pretrained(directorio_guardado)
 
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             model.to(device)
