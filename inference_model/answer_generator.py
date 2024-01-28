@@ -1,5 +1,8 @@
 import os
-from langchain import HuggingFaceHub, PromptTemplate, LLMChain
+from langchain_community.llms import HuggingFaceHub
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
 
 class ConversationalAgent:
     HUGGINGFACEHUB_API_TOKEN = os.getenv('HF_TOKEN')
@@ -34,5 +37,5 @@ class ConversationalAgent:
 
     def answer_question(self, question, context):
         input_data = {'query': question, 'context': context}
-        return self.conv_chain.run(input_data)
+        return self.conv_chain.invoke(input_data)
 

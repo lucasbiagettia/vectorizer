@@ -114,7 +114,28 @@ class TxtProcessor:
             batches.append(' '.join(batch))
 
         return batches
+    def split_into_sentences(self, text):
+        sentences = text.split(".")
+        sentences = [sentence.strip() for sentence in sentences if sentence]
+        sentences = [sentence for sentence in sentences if len(sentence.split()) >= 20]
+        return sentences
     
+    def generate_batches(self, string_array):
+        batches = [string_array[0]]
+        for string in string_array[1:]: 
+            words = len(batches[-1].split()) 
+            if words + len(string.split()) <= 80:  
+                batches[-1] += string 
+            else:
+                batches.append(string)  
+        return batches
+
+    def split_into_batches2(self, text):
+        sentences = self.split_into_sentences(text)
+        batches = self.generate_batches(sentences)
+        return batches
+
+   
     def add_to_json (self, text):
         json_result = {'chunk': text}
         return json.dumps(json_result)
@@ -124,13 +145,11 @@ class TxtProcessor:
         for batch in batches:
             df = pd.concat([df, pd.DataFrame({'title': [batch], 'embeddings': [self.embedding_model.get_embedding(batch)]})], ignore_index=True)
 
-        # for batch in tqdm(batches, desc="Processing batches", unit="batch"):
-        #     df = pd.concat([df, pd.DataFrame({'title': [batch], 'embeddings': [self.embedding_model.get_embedding(batch)]})], ignore_index=True)
         return df
     
     def get_processed_data(self):
         text = self.read_pdf()
-        batches = self.split_into_batches(text)
+        batches = self.split_into_batches2(text)
         df = self.data_to_dataframe(batches)
         return df
 

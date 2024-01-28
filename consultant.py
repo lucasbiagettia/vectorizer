@@ -1,4 +1,3 @@
-import json
 from db_manager import PosgresManager
 from inference_model.answer_generator import ConversationalAgent
 from vectorizer import EmbeddingModel
@@ -14,19 +13,6 @@ db_manager.connect()
 table_name = "marx"
 user_inp = ""
 
-def decode_json(result):
-    for row in result:
-        for value in row:
-            json_object = json.loads(value)
-            print ("Titulo:")
-            print (json_object['title']) 
-            print ("texto")
-            print (json_object['chunk'])
-
-def create_json(main_text, context_texts):
-    result = {"pregunta": main_text, "contexto": context_texts}
-    json_result = json.dumps(result, indent=2, ensure_ascii=False)
-    return json_result
 
 while True:
     user_inp = input("Que quieres saber: ")

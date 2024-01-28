@@ -1,3 +1,4 @@
+import os
 from transformers import RobertaTokenizer, RobertaModel
 import torch
 
@@ -6,12 +7,15 @@ class EmbeddingModel:
 
     def __new__(cls):
         if cls._instance is None:
-            tokenizer = RobertaTokenizer.from_pretrained('PlanTL-GOB-ES/roberta-base-bne')
-            model = RobertaModel.from_pretrained('PlanTL-GOB-ES/roberta-base-bne')
-            directorio_guardado = "model"
-            model.save_pretrained(directorio_guardado)
-            tokenizer.save_pretrained(directorio_guardado)
+            folder_path = 'model'
+            model_path = None
 
+            if os.path.isdir(folder_path):
+                model_path = folder_path
+            else:
+                model_path = 'PlanTL-GOB-ES/roberta-base-bne'
+            tokenizer = RobertaTokenizer.from_pretrained(model_path)
+            model = RobertaModel.from_pretrained(model_path)
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             model.to(device)
 
