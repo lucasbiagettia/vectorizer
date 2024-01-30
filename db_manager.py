@@ -28,6 +28,10 @@ class PosgresManager:
         self.conn.commit()
         register_vector(self.conn)
 
+    def create_database(self):
+        sql_create_db = f"CREATE DATABASE {self.dbname};"
+        self.cur.execute(sql_create_db)
+
     def create_table(self, name, dimension):
         table_create_command = """
         CREATE TABLE IF NOT EXISTS {} (
