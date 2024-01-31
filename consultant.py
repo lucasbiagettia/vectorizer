@@ -1,5 +1,5 @@
 from db_manager import PosgresManager
-from inference_model.answer_generator import ConversationalAgent
+from inference_model.answer_generator import InferenceModel
 from vectorizer import EmbeddingModel
 
 embedding_model = EmbeddingModel()
@@ -17,7 +17,7 @@ def get_answer():
     user_inp = input("Que quieres saber: ")
     embedding = embedding_model.get_embedding(user_inp)
     sim_docs = db_manager.get_similar_docs(embedding, 5, table_name)
-    agent = ConversationalAgent()
+    agent = InferenceModel()
     ans = agent.answer_question(user_inp, sim_docs)
     print(ans)
 def close():

@@ -1,7 +1,7 @@
 from data_processor import CsvProcessor, TxtProcessor
 from db_manager import PosgresManager
 from vectorizer import EmbeddingModel
-from inference_model.answer_generator import ConversationalAgent
+from inference_model.answer_generator import InferenceModel
 
 class DataProcessor:
     def __init__(self, file_path, embedding_model):
@@ -49,7 +49,7 @@ class AnswerProcessor:
         user_inp = input("Que quieres saber: ")
         embedding = self.embedding_model.get_embedding(user_inp)
         sim_docs = self.db_manager.get_similar_docs(embedding, 5, self.table_name)
-        agent = ConversationalAgent()
+        agent = InferenceModel()
         ans = agent.answer_question(user_inp, sim_docs)
         print(ans)
 

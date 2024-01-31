@@ -4,7 +4,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
 
-class ConversationalAgent:
+class InferenceModel:
     HUGGINGFACEHUB_API_TOKEN = os.getenv('HF_TOKEN')
     MODEL_ID = "tiiuae/falcon-7b-instruct"
 

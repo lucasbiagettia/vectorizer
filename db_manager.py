@@ -28,10 +28,6 @@ class PosgresManager:
         self.conn.commit()
         register_vector(self.conn)
 
-    def create_database(self):
-        sql_create_db = f"CREATE DATABASE {self.dbname};"
-        self.cur.execute(sql_create_db)
-
     def create_table(self, name, dimension):
         table_create_command = """
         CREATE TABLE IF NOT EXISTS {} (
@@ -60,6 +56,21 @@ class PosgresManager:
         top_docs = self.cur.fetchall()
         text_top_docs = [doc[0] for doc in top_docs]
         return text_top_docs
+    
+    def get_table_names(self):
+        try:
+            query = """
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public';
+            """
+            self.cur.execute(query)
+            table_names = self.cur.fetchall()
+            table_names = [name[0] for name in table_names]
+            return table_names
+        except Exception as e:
+            print(f"Error al obtener los nombres de las tablas: {e}")
+            return None
 
 
     def close_connection(self):

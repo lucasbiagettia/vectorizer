@@ -94,15 +94,18 @@ class TxtProcessor:
         self.embedding_model = embedding_model
         
     def read_pdf(self):
-        with open(self.pdf_file, 'rb') as file:
+        # with open(self.pdf_file, 'rb') as file:
+        #     pdf_reader = PyPDF2.PdfReader(file)
+        
+        with self.pdf_file as file:
             pdf_reader = PyPDF2.PdfReader(file)
+        
             
             pdf_content = ""
             for page_number in range(len(pdf_reader.pages)):
                 page = pdf_reader.pages[page_number]
                 text_page = page.extract_text()
                 pdf_content += text_page
-            
             return pdf_content
         
     def split_into_batches(self, text, words_per_batch=100):
@@ -149,7 +152,7 @@ class TxtProcessor:
     
     def get_processed_data(self):
         text = self.read_pdf()
-        batches = self.split_into_batches2(text)
+        batches = self.split_into_batches(text)
         df = self.data_to_dataframe(batches)
         return df
 
