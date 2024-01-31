@@ -16,12 +16,12 @@ data_processor = TxtProcessor(pdf_file, embedding_model)
 df = data_processor.get_processed_data()
 dim = embedding_model.get_hidden_size()
 
-dbname = 'vectorpoc'
+dbname = 'embeddings'
 db_manager = PosgresManager(dbname)
 db_manager.connect()
 db_manager.create_extension()
 
-table_name = "marx"
+table_name = 'poc'
 db_manager.create_table(table_name, dim)
 
 db_manager.insert_data(df, table_name)

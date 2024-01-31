@@ -1,7 +1,7 @@
 transformers==4.35.2
 torch==2.1.0
 pinecone-client[grpc]==2.2.1
-pandas==2.2.0
-psycopg2==2.9.9
+pandas
+psycopg2
 pgvector==0.2.4
 PyPDF2==3.0.1
