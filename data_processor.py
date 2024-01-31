@@ -108,15 +108,15 @@ class TxtProcessor:
                 pdf_content += text_page
             return pdf_content
         
-    def split_into_batches(self, text, words_per_batch=100):
-        words = text.split()
-        batches = []
+    # def split_into_batches(self, text, words_per_batch=100):
+    #     words = text.split()
+    #     batches = []
 
-        for i in range(0, len(words), words_per_batch):
-            batch = words[i:i + words_per_batch]
-            batches.append(' '.join(batch))
+    #     for i in range(0, len(words), words_per_batch):
+    #         batch = words[i:i + words_per_batch]
+    #         batches.append(' '.join(batch))
 
-        return batches
+    #     return batches
     def split_into_sentences(self, text):
         sentences = text.split(".")
         sentences = [sentence.strip() for sentence in sentences if sentence]
@@ -133,7 +133,7 @@ class TxtProcessor:
                 batches.append(string)  
         return batches
 
-    def split_into_batches2(self, text):
+    def split_into_batches(self, text):
         sentences = self.split_into_sentences(text)
         batches = self.generate_batches(sentences)
         return batches
@@ -152,7 +152,7 @@ class TxtProcessor:
     
     def get_processed_data(self):
         text = self.read_pdf()
-        batches = self.split_into_batches2(text)
+        batches = self.split_into_batches(text)
         df = self.data_to_dataframe(batches)
         return df
 
