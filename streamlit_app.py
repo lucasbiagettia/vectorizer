@@ -45,7 +45,7 @@ def handle_chat_input(prompt):
         app_manager = st.session_state.app_manager
         response = app_manager.make_question(db_name, document, question, embedding_model, inference_model)
         #st.markdown(response)
-
+    print(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 def add_document(uploaded_file):
@@ -78,15 +78,7 @@ def main():
         if selected_option is not None:
             st.session_state.selected_document = selected_option
 
-       
 
-        # user_input = st.text_input("Ingrese un texto:")
-        # if st.button("Upload File"):
-        #     if user_input is not None:
-        #         app_manager = st.session_state.app_manager
-        #         db_name = st.session_state.db_name
-        #         app_manager.add_document(db_name, user_input, st.session_state.embedding_model)
-        #         st.write(f'You have uploaded the file: {user_input}')
         uploaded_file = st.file_uploader('Select a file', type=['pdf'])
 
         if st.button("Upload File"):

@@ -10,13 +10,13 @@ embedding_model = EmbeddingModel()
 # data_processor = CsvProcessor(csv_file, column_names, embedding_model)
 
 
-pdf_file = 'sample_data/communist_manifest.pdf'
+pdf_file = '/home/lucasbiagetti/Documentos/gitPr/vectorizer/sample_data/communist_manifest.pdf'
 data_processor = TxtProcessor(pdf_file, embedding_model)
 
 df = data_processor.get_processed_data()
 dim = embedding_model.get_hidden_size()
 
-dbname = 'embeddings'
+dbname = 'vectorpoc'
 db_manager = PosgresManager(dbname)
 db_manager.connect()
 db_manager.create_extension()

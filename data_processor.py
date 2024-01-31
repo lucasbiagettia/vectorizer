@@ -94,11 +94,11 @@ class TxtProcessor:
         self.embedding_model = embedding_model
         
     def read_pdf(self):
-        # with open(self.pdf_file, 'rb') as file:
-        #     pdf_reader = PyPDF2.PdfReader(file)
-        
-        with self.pdf_file as file:
+        with open(self.pdf_file, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
+        
+        # with self.pdf_file as file:
+        #     pdf_reader = PyPDF2.PdfReader(file)
         
             
             pdf_content = ""
