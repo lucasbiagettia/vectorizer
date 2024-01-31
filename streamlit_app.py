@@ -32,7 +32,6 @@ def reset_values():
 def handle_chat_input(prompt):
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant"):
         db_name = st.session_state.db_name
@@ -42,9 +41,8 @@ def handle_chat_input(prompt):
         inference_model = st.session_state.inference_model
         app_manager = st.session_state.app_manager
         response = app_manager.make_question(db_name, document, question, embedding_model, inference_model)
-        #st.markdown(response)
+        st.markdown(str(response))
     print(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
 
 def add_document(uploaded_file):
     print("adding")
