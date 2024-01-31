@@ -21,8 +21,11 @@ if "selected_document" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "selected_model" not in st.session_state:
+    st.session_state.selected_model = "tiiuae/falcon-7b"
+
 if "inference_model" not in st.session_state:
-    st.session_state.inference_model = InferenceModel()
+    st.session_state.inference_model = None
 
 
 def reset_values():
@@ -32,7 +35,8 @@ def reset_values():
 def handle_chat_input(prompt):
     with st.chat_message("user"):
         st.markdown(prompt)
-
+    if st.session_state.inference_model is None:
+        st.session_state.inference_model = InferenceModel(st.session_state.selected_model)
     with st.chat_message("assistant"):
         db_name = st.session_state.db_name
         document = st.session_state.selected_document
@@ -74,6 +78,9 @@ def main():
         if selected_option is not None:
             st.session_state.selected_document = selected_option
 
+        selected_model = st.text_input("Select a model", value="tiiuae/falcon-7b")
+        st.session_state.selected_model = selected_model
+        st.write('Modelo seleccionado', selected_model)
 
         uploaded_file = st.file_uploader('Select a file', type=['pdf'])
 
