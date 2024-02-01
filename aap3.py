@@ -20,20 +20,14 @@ class AppManager:
         db_manager.create_extension()
         db_manager.create_table(table_name, dim)
         db_manager.insert_data(df, table_name)
-        print("adding2")
-
         db_manager.close_connection()
 
     def make_question(self, dbname, document, question, embedding_model, inference_model):
         table_name = self.get_table_name_by_document(document)
-        print(table_name)
         db_manager = PosgresManager(dbname)
         db_manager.connect()
         embedding = embedding_model.get_embedding(question)
-        print(embedding)
         sim_docs = db_manager.get_similar_docs(embedding, 5, table_name)
-        print("sim_docs")
-        print(sim_docs)
         ans = inference_model.answer_question(question, sim_docs)
         return ans
 

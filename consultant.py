@@ -19,7 +19,6 @@ def get_answer():
     sim_docs = db_manager.get_similar_docs(embedding, 5, table_name)
     agent = InferenceModel()
     ans = agent.answer_question(user_inp, sim_docs)
-    print(ans)
 def close():
     db_manager.close_connection()
 

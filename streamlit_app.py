@@ -46,10 +46,8 @@ def handle_chat_input(prompt):
         app_manager = st.session_state.app_manager
         response = app_manager.make_question(db_name, document, question, embedding_model, inference_model)
         st.markdown(str(response))
-    print(response)
 
 def add_document(uploaded_file):
-    print("adding")
     app_manager = st.session_state.app_manager
     db_name = st.session_state.db_name
     app_manager.add_document(db_name, uploaded_file, st.session_state.embedding_model)
