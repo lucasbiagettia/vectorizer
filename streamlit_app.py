@@ -14,7 +14,6 @@ if "db_name" not in st.session_state:
 if "embedding_model" not in st.session_state:
     st.session_state.embedding_model = EmbeddingModel()
 
-
 if "selected_document" not in st.session_state:
     st.session_state.selected_document = None
 
@@ -80,24 +79,24 @@ def main():
         st.session_state.selected_model = selected_model
         st.write('Modelo seleccionado', selected_model)
 
+        embedding_models = ['PlanTL-GOB-ES/roberta-base-bne']
+        embedding_model = st.selectbox('Select an option:', embedding_models)
+        st.write('You have selected:', embedding_model)
+        if selected_option is not None:
+            st.session_state.embedding_model = EmbeddingModel()
+
         uploaded_file = st.file_uploader('Select a file', type=['pdf'])
-
+        file_name2 = st.text_input("Ingresa el nombre del archivo:")
         if st.button("Upload File"):
-
-            if uploaded_file is not None:
-                       
+            if uploaded_file is not None and file_name2:
                 app_manager = st.session_state.app_manager
                 db_name = st.session_state.db_name
                 app_manager.add_document(db_name, uploaded_file, st.session_state.embedding_model)
                 file_name, file_extension = os.path.splitext(uploaded_file.name)
                 st.write(f'You have uploaded the file: {file_name}')
-            
             else:
-                st.write('Waiting for you to select a file...')
+                st.write('Debes seleccionar un archivo y asignarle nombre')
 
-        st.subheader("Estemos en contacto:")
-
-  
 
     print_all_messages(st.session_state.messages)
 
