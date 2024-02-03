@@ -1,8 +1,8 @@
 import os
 import streamlit as st
-from aap3 import AppManager
+from app_manager import AppManager
 from inference_model.answer_generator import InferenceModel
-from vectorizer import EmbeddingModel
+from src.embedding_model_manager import EmbeddingModel
  
 
 if "app_manager" not in st.session_state:

@@ -1,6 +1,7 @@
 import os
-from data_processor import TxtProcessor
-from db_manager import PosgresManager
+from src.data_processor import TxtProcessor
+from src.db_manager import PosgresManager
+
 
 
 class AppManager:
@@ -17,10 +18,8 @@ class AppManager:
         dim = embedding_model.get_hidden_size()
         db_manager = PosgresManager(dbname)
         db_manager.connect()
-        db_manager.create_extension()
         db_manager.create_table(table_name, dim)
         db_manager.insert_data(df, table_name)
-        db_manager.close_connection()
 
     def make_question(self, dbname, document, question, embedding_model, inference_model):
         table_name = self.get_table_name_by_document(document)
