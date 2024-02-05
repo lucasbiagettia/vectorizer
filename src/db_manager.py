@@ -34,9 +34,6 @@ class PosgresManager:
     def close_all_connections(self):
         self.connection_pool.closeall()
 
-    def connect(self):
-        self.conn = psycopg2.connect(dbname=self.dbname, user=self.user, password=self.password, host=self.host, port=self.port, options="-c client_encoding=utf8")
-        self.cur = self.conn.cursor()
 
     def _create_vector_extension(self):
         conn = self.get_connection()
@@ -45,6 +42,21 @@ class PosgresManager:
                 cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
                 conn.commit()
                 register_vector(conn)
+        finally:
+            self.release_connection(conn)
+
+    def create_table_with_id_name(self, name):
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                table_create_command = """
+                CREATE TABLE IF NOT EXISTS {} (
+                    id SERIAL PRIMARY KEY,
+                    nombre VARCHAR(255)
+                );
+                """.format(name)
+                cur.execute(table_create_command)
+                conn.commit()
         finally:
             self.release_connection(conn)
 
@@ -62,6 +74,39 @@ class PosgresManager:
                 """.format(name, dimension)
                 cur.execute(table_create_command)
                 conn.commit()
+        finally:
+            self.release_connection(conn)
+
+    def insert_tabular_data(self, name, table_name = 'index'):
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                insert_command = """
+                INSERT INTO {} (nombre) VALUES (%s);
+                """.format(table_name)
+
+                cur.execute(insert_command, (name,))
+                conn.commit()
+        finally:
+            self.release_connection(conn)
+
+
+    def get_index_by_name(self,  name, table_name ='index'):
+      
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                select_command = """
+                SELECT id FROM {} WHERE nombre = %s;
+                """.format(table_name)
+
+                cur.execute(select_command, (name,))
+                result = cur.fetchone()
+
+                if result:
+                    return result[0]
+                else:
+                    return None
         finally:
             self.release_connection(conn)
 

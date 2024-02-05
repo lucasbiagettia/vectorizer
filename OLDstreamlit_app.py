@@ -16,9 +16,6 @@ def initialize_session_variables():
 
     if "embedding_model" not in st.session_state:
         st.session_state.embedding_model = None
-    
-    if "embedding_model_name" not in st.session_state:
-        st.session_state.embedding_model_name = None
 
     if "selected_document" not in st.session_state:
         st.session_state.selected_document = None
@@ -58,14 +55,20 @@ def get_available_documents():
     db_name = st.session_state.db_name
     return app_manager.get_all_tables(db_name)
 
+def print_all_messages(messages):
+    for message in messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 def display_header():
     st.header("Vas a preguntar")
 
 def handle_sidebar():
     display_inference_model_selection()
-
-    upload_document()
+    display_embedding_model_selection()
+    display_splitter_selection()
+    display_document_selection()
+    handle_file_upload()
 
 
 def display_inference_model_selection():
@@ -73,6 +76,18 @@ def display_inference_model_selection():
     st.write('Modelo seleccionado', selected_model)
     if selected_model is not None:
         st.session_state.inference_model = InferenceModel(model_id=selected_model)
+
+def display_embedding_model_selection():
+    embedding_model = st.text_input('Select an embedding model:')
+    if embedding_model is not None:
+        st.session_state.embedding_model = EmbeddingModel(embedding_model)
+
+def display_splitter_selection():
+    splitter_models = ['lbiagetti splitter']
+    splitter_model = st.selectbox('Select an option:', splitter_models)
+    st.write('You have selected:', splitter_model)
+    if splitter_model is not None:
+        st.session_state.splitter_model = splitter_model
 
 
 def display_document_selection():
@@ -82,65 +97,29 @@ def display_document_selection():
     if selected_option is not None:
         st.session_state.selected_document = selected_option
 
-def display_embedding_model_selection():
-    embedding_model = st.text_input('Select an embedding model:','sentence-transformers/LaBSE')
-    return embedding_model
-
-
-def display_splitter_selection():
-    splitter_models = ['lbiagetti splitter']
-    splitter_model = st.selectbox('Select an option:', splitter_models)
-    st.write('You have selected:', splitter_model)
-    return splitter_model
-
-def file_upload_and_input():
+def handle_file_upload():
     uploaded_file = st.file_uploader('Select a file', type=['pdf'])
-    return uploaded_file
+    file_name2 = st.text_input("Ingresa el nombre del archivo:")
+    if st.button("Upload File"):
+        process_file_upload(uploaded_file, file_name2)
 
-        
-def upload_document():
-    if st.button("Upload Document"):
-        with st.form("Upload file"):
-            st.subheader('Embedding model')
-            embedding_model = display_embedding_model_selection()
-            st.subheader('Splitter model')
-            splitter = display_splitter_selection()
-            st.subheader('Upload file')
-            uploaded_file = file_upload_and_input()
+def process_file_upload(uploaded_file, file_name):
+    if uploaded_file is not None and file_name:
+        add_document(uploaded_file)
+        file_name, file_extension = os.path.splitext(uploaded_file.name)
+        st.write(f'You have uploaded the file: {file_name}')
+    else:
+        st.write('Debes seleccionar un archivo y asignarle nombre')
 
-            if st.form_submit_button("Confirm"):
-                if "embedding_model" not in st.session_state or st.session_state.embedding_model is None:
-                    st.session_state.embedding_model = EmbeddingModel(embedding_model)
-                    st.session_state.embedding_model_name = embedding_model
-
-                if "selected_document" not in st.session_state or st.session_state.selected_document is None:
-                    st.session_state.selected_document = uploaded_file
-                        
-                if "splitter_model" not in st.session_state or st.session_state.splitter_model is None:
-                    st.session_state.splitter_model = splitter
-                
-                process_file_upload()
-
-
-def process_file_upload():
-    print("procesando")
-    file = st.session_state.selected_document
-    model_name = st.session_state.embedding_model_name
-    model = st.session_state.embedding_model
-    splitter = st.session_state.splitter_model
-    app_manager = st.session_state.app_manager
-    app_manager.add_document(st.session_state.db_name, file, model, model_name, splitter)
-   
-
-# def display_chat_messages():
-#     print_all_messages(st.session_state.messages)
+def display_chat_messages():
+    print_all_messages(st.session_state.messages)
 
 def main():
     initialize_session_variables()
     display_header()
     with st.sidebar:
         handle_sidebar()
-    # display_chat_messages()
+    display_chat_messages()
     prompt = st.chat_input("Ayúdame a continuar escribiendo")
     if prompt:
         handle_chat_input(prompt)
