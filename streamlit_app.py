@@ -56,34 +56,52 @@ def add_document(uploaded_file):
 def get_available_documents():
     app_manager = st.session_state.app_manager
     db_name = st.session_state.db_name
-    return app_manager.get_all_tables(db_name)
+    return app_manager.get_all_documents(db_name)
 
 
 def display_header():
     st.header("Vas a preguntar")
 
 def handle_sidebar():
-    display_inference_model_selection()
+    select_model_and_document()
 
     upload_document()
-
 
 def display_inference_model_selection():
     selected_model = st.text_input("Select a model", value="tiiuae/falcon-7b")
     st.write('Modelo seleccionado', selected_model)
-    if selected_model is not None:
-        st.session_state.inference_model = InferenceModel(model_id=selected_model)
+    return selected_model
 
 
 def display_document_selection():
     options = get_available_documents()
-    selected_option = st.selectbox('Select an option:', options)
-    st.write('You have selected:', selected_option)
-    if selected_option is not None:
-        st.session_state.selected_document = selected_option
+    selected_document = st.selectbox('Select an option:', options)
+    st.write('You have selected:', selected_document)
+    return selected_document
+
+
+def select_model_and_document():
+    #if st.button("Upload Document"):
+        with st.form("Select model and document"):
+            st.subheader('Inference model')
+            inference_model = display_inference_model_selection()
+            st.subheader('Document')
+            document = display_document_selection()
+
+            if st.form_submit_button("Confirm selection"):
+                if "inference_model" not in st.session_state or st.session_state.inference_model is None:
+                    st.session_state.inference_model = InferenceModel(inference_model)
+                
+
+                if "selected_document" not in st.session_state or st.session_state.selected_document is None:
+                    st.session_state.selected_document = document
+
+                if "embedding_model" not in st.session_state or st.session_state.embedding_model is None:
+                    st.session_state.embedding_model = EmbeddingModel('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+                print('ok')
 
 def display_embedding_model_selection():
-    embedding_model = st.text_input('Select an embedding model:','sentence-transformers/LaBSE')
+    embedding_model = st.text_input('Select an embedding model:','sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')#'sentence-transformers/LaBSE')
     return embedding_model
 
 
@@ -97,9 +115,12 @@ def file_upload_and_input():
     uploaded_file = st.file_uploader('Select a file', type=['pdf'])
     return uploaded_file
 
+def print_in_main():
+    st.markdown("## Chat History")
+
         
 def upload_document():
-    if st.button("Upload Document"):
+    #if st.button("Upload Document"):
         with st.form("Upload file"):
             st.subheader('Embedding model')
             embedding_model = display_embedding_model_selection()
@@ -109,6 +130,7 @@ def upload_document():
             uploaded_file = file_upload_and_input()
 
             if st.form_submit_button("Confirm"):
+                st.markdown("## Chat History")
                 if "embedding_model" not in st.session_state or st.session_state.embedding_model is None:
                     st.session_state.embedding_model = EmbeddingModel(embedding_model)
                     st.session_state.embedding_model_name = embedding_model
@@ -123,7 +145,6 @@ def upload_document():
 
 
 def process_file_upload():
-    print("procesando")
     file = st.session_state.selected_document
     model_name = st.session_state.embedding_model_name
     model = st.session_state.embedding_model

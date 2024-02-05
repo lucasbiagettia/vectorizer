@@ -45,7 +45,7 @@ class PosgresManager:
         finally:
             self.release_connection(conn)
 
-    def create_table_with_id_name(self, name):
+    def create_table_with_id_name(self, name = 'index'):
         conn = self.get_connection()
         try:
             with conn.cursor() as cur:
@@ -137,19 +137,14 @@ class PosgresManager:
         finally:
             self.release_connection(conn)
     
-    def get_table_names(self):
-        conn = self.get_connection()
+    def get_all_entries(self, table_name='index'):
+        connection = self.get_connection()
         try:
-            with conn.cursor() as cur:
-                query = """
-                SELECT table_name
-                FROM information_schema.tables
-                WHERE table_schema = 'public';
-                """
-                cur.execute(query)
-                table_names = cur.fetchall()
-                table_names = [name[0] for name in table_names]
-                return table_names
+            with connection.cursor() as cursor:
+                query = f"SELECT * FROM {table_name};"
+                cursor.execute(query)
+                entries = cursor.fetchall()
+                return entries
         finally:
-            self.release_connection(conn)
+            self.release_connection(connection)
 
