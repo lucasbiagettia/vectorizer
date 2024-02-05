@@ -50,3 +50,6 @@ develop-eggs/
 
 # EmbedingModel
 model/
+
+# Sample data
+sample_data/
