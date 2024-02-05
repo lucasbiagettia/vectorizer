@@ -15,7 +15,7 @@ class AppManager:
         table_name = self.get_table_name_by_document(file_name)
         data_processor = TxtProcessor(document, embedding_model)
         df = data_processor.get_processed_data()
-        dim = embedding_model.get_hidden_size()
+        dim = embedding_model.get_embedding_dim()
         db_manager = PosgresManager(dbname)
         db_manager.connect()
         db_manager.create_table(table_name, dim)

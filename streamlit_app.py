@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from app_manager import AppManager
 from src.inference_model_manager import InferenceModel
-from src.embedding_model_manager import EmbeddingModel
+from src.embedding_model_manager import EmbeddingModel, EmbeddingModel
 
 def initialize_session_variables():
     if "app_manager" not in st.session_state:
@@ -15,7 +15,7 @@ def initialize_session_variables():
         st.session_state.inference_model = None
 
     if "embedding_model" not in st.session_state:
-        st.session_state.embedding_model = EmbeddingModel()
+        st.session_state.embedding_model = None
 
     if "selected_document" not in st.session_state:
         st.session_state.selected_document = None
@@ -78,11 +78,11 @@ def display_inference_model_selection():
         st.session_state.inference_model = InferenceModel(model_id=selected_model)
 
 def display_embedding_model_selection():
-    embedding_models = ['PlanTL-GOB-ES/roberta-base-bne']
+    embedding_models = ['PlanTL-GOB-ES/roberta-base-bne', 'sentence-transformers/LaBSE']
     embedding_model = st.selectbox('Select an option:', embedding_models)
     st.write('You have selected:', embedding_model)
     if embedding_model is not None:
-        st.session_state.embedding_model = EmbeddingModel()
+        st.session_state.embedding_model = EmbeddingModel('sentence-transformers/LaBSE')
 
 def display_splitter_selection():
     splitter_models = ['lbiagetti splitter']
