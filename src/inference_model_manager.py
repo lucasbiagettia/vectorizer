@@ -2,17 +2,20 @@ import os
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_community.llms import HuggingFaceHub
+from src.config.config_provider import ConfigProvider
 
 
 
 class TextGenerationSingleton:
     _instance = None
 
-    def __new__(cls, model_id, use_api_key = True):
+    def __new__(cls, model_id, use_api_key = False):
         if cls._instance is None:
             cls._instance = super(TextGenerationSingleton, cls).__new__(cls)
-            temperature = 0.1
-            max_new_tokens = 100
+            config_provider = ConfigProvider()
+            inference_model_args = config_provider.get_inference_model_args()
+            temperature = inference_model_args['temperature']
+            max_new_tokens = inference_model_args['max_new_tokens']
             # num_return_sequences = 1
             # no_repeat_ngram_size = 6
             # top_k = 35
