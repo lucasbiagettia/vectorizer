@@ -1,15 +1,15 @@
-import os
 import streamlit as st
 from app_manager import AppManager
+from src.qa_chain import QuestionAnsweringChain
 from src.inference_model_manager import InferenceModel
 from src.embedding_model_manager import EmbeddingModel, EmbeddingModel
 
 def initialize_session_variables():
     if "app_manager" not in st.session_state:
-        st.session_state.app_manager = AppManager()
+        st.session_state.app_manager = AppManager('vectorpoc')
 
-    if "db_name" not in st.session_state:
-        st.session_state.db_name = 'vectorpoc'
+    # if "db_name" not in st.session_state:
+    #     st.session_state.db_name = 'vectorpoc'
 
     if "inference_model" not in st.session_state:
         st.session_state.inference_model = None
@@ -37,26 +37,23 @@ def handle_chat_input(prompt):
     with st.chat_message("user"):
         st.markdown(prompt)
     if st.session_state.inference_model is None:
-        st.session_state.inference_model = InferenceModel()
+        st.session_state.inference_model = QuestionAnsweringChain('DeepESP/gpt2-spanish-medium')
     with st.chat_message("assistant"):
-        db_name = st.session_state.db_name
         document = st.session_state.selected_document
         question = prompt
         embedding_model = st.session_state.embedding_model
         inference_model = st.session_state.inference_model
         app_manager = st.session_state.app_manager
-        response = app_manager.make_question(db_name, document, question, embedding_model, inference_model)
+        response = app_manager.make_question(document, question, embedding_model, inference_model)
         st.markdown(str(response))
 
 def add_document(uploaded_file):
     app_manager = st.session_state.app_manager
-    db_name = st.session_state.db_name
-    app_manager.add_document(db_name, uploaded_file, st.session_state.embedding_model)
+    app_manager.add_document(uploaded_file, st.session_state.embedding_model)
 
 def get_available_documents():
     app_manager = st.session_state.app_manager
-    db_name = st.session_state.db_name
-    return app_manager.get_all_documents(db_name)
+    return app_manager.get_all_documents()
 
 
 def display_header():
@@ -150,7 +147,7 @@ def process_file_upload():
     model = st.session_state.embedding_model
     splitter = st.session_state.splitter_model
     app_manager = st.session_state.app_manager
-    app_manager.add_document(st.session_state.db_name, file, model, model_name, splitter)
+    app_manager.add_document(file, model, model_name, splitter)
    
 
 # def display_chat_messages():

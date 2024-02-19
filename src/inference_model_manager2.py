@@ -16,6 +16,3 @@ class TextGenerationSingleton:
         instance = cls(model_id)
         return instance.pipe
 
-# Uso del singleton
-model_id = "mistralai/Mistral-7B-Instruct-v0.2"
-pipeline_instance = TextGenerationSingleton.get_pipeline(model_id)
