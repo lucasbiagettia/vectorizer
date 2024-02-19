@@ -12,12 +12,13 @@ class TextGenerationSingleton:
         if cls._instance is None:
             cls._instance = super(TextGenerationSingleton, cls).__new__(cls)
             temperature = 0.1
-            max_new_tokens = 400
+            max_new_tokens = 100
             # num_return_sequences = 1
             # no_repeat_ngram_size = 6
             # top_k = 35
             # top_p = 0.95
             if (use_api_key):
+                print ("pidiendo con apik")
                 api_token = os.getenv('HF_TOKEN')
                 cls._instance.hf_pipeline = HuggingFaceHub(
                     huggingfacehub_api_token= api_token,

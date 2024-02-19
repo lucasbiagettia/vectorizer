@@ -36,7 +36,7 @@ def handle_chat_input(prompt):
     with st.chat_message("user"):
         st.markdown(prompt)
     if st.session_state.inference_model is None:
-        st.session_state.inference_model = QuestionAnsweringChain('tiiuae/falcon-7b')
+        st.session_state.inference_model = QuestionAnsweringChain('mistralai/Mistral-7B-v0.1')
     with st.chat_message("assistant"):
         document = st.session_state.selected_document
         question = prompt
@@ -86,7 +86,7 @@ def select_model_and_document():
 
             if st.form_submit_button("Confirm selection"):
                 if "inference_model" not in st.session_state or st.session_state.inference_model is None:
-                    st.session_state.inference_model = InferenceModel(inference_model)
+                    st.session_state.inference_model = QuestionAnsweringChain('mistralai/Mistral-7B-v0.1')
                 
 
                 if "selected_document" not in st.session_state or st.session_state.selected_document is None:

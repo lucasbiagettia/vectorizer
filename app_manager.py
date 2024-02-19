@@ -32,8 +32,8 @@ class AppManager:
     def make_question(self, document, question, embedding_model, inference_model):
         table_name = self.get_embed_table_name(document[0]) 
         embedding = embedding_model.get_embedding(question)
-
-        sim_docs = self.db_manager.get_similar_docs(embedding, 5, table_name)
+        print("preguntando")
+        sim_docs = self.db_manager.get_similar_docs(embedding, 2, table_name)
         ans = inference_model.answer_question(question, sim_docs)
         return ans
 
