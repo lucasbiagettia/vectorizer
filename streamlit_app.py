@@ -1,8 +1,7 @@
 import streamlit as st
 from app_manager import AppManager
 from src.qa_chain import QuestionAnsweringChain
-from src.inference_model_manager import InferenceModel
-from src.embedding_model_manager import EmbeddingModel, EmbeddingModel
+from src.embedding_model_manager import EmbeddingModel
 
 def initialize_session_variables():
     if "app_manager" not in st.session_state:
@@ -37,7 +36,7 @@ def handle_chat_input(prompt):
     with st.chat_message("user"):
         st.markdown(prompt)
     if st.session_state.inference_model is None:
-        st.session_state.inference_model = QuestionAnsweringChain('DeepESP/gpt2-spanish-medium')
+        st.session_state.inference_model = QuestionAnsweringChain('tiiuae/falcon-7b')
     with st.chat_message("assistant"):
         document = st.session_state.selected_document
         question = prompt
