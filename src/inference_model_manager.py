@@ -9,7 +9,7 @@ from src.config.config_provider import ConfigProvider
 class TextGenerationSingleton:
     _instance = None
 
-    def __new__(cls, model_id, use_api_key = True):
+    def __new__(cls, model_id, use_api_key = False):
         if cls._instance is None:
             cls._instance = super(TextGenerationSingleton, cls).__new__(cls)
             config_provider = ConfigProvider()

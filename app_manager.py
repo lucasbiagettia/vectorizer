@@ -48,7 +48,7 @@ class AppManager:
         table_name = self.get_embed_table_name(document[0]) 
         embedding_model = EmbeddingModel(embedding_model_name)
         embedding = embedding_model.get_embedding(question)
-        sim_docs = self.db_manager.get_similar_docs(embedding, 2, table_name)
+        sim_docs = self.db_manager.get_similar_docs(embedding, 5, table_name)
         inference_model = QuestionAnsweringChain(inference_model_name)
         ans = inference_model.answer_question(question, sim_docs)
         return ans

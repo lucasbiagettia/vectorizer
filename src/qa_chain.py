@@ -12,7 +12,8 @@ class QuestionAnsweringChain:
 
     def answer_question(self, question, context):
         ans = self.chain.invoke({"question": question, 'context': context})
-        return self.extract_model_response (ans['text'])
+        return ans['text']
+        # return self.extract_model_response (ans['text'])
     
     def extract_model_response(self, input_string):
         start_index = input_string.find("<start_of_turn>model") + len("<start_of_turn>model")
