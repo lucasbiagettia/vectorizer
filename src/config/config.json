@@ -2,6 +2,7 @@
     "db_name": "vectorpoc",
     "default_embedding_model": "mrm8488/distiluse-base-multilingual-cased-v2-finetuned-stsb_multi_mt-es",
     "default_inference_model": "google/gemma-2b-it",
+    "use_faiss": true,
     "inference_model_args":{
         "temperature" : 0.5,
         "max_new_tokens" : 400,

@@ -21,4 +21,7 @@ class ConfigProvider:
 
     def get_inference_model_args(self):
         return self.config.get('inference_model_args', {})
+    
+    def use_faiss(self):
+        return self.config.get('use_faiss')
 

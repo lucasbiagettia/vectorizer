@@ -1,8 +1,6 @@
 import streamlit as st
 from src.config.config_provider import ConfigProvider
 from app_manager import AppManager
-from src.qa_chain import QuestionAnsweringChain
-from src.embedding_model_manager import EmbeddingModel
 
 config_provider = ConfigProvider()
 
@@ -11,7 +9,7 @@ def initialize_session_variables():
         st.session_state.app_manager = AppManager('vectorpoc')
 
     if "inference_model_name" not in st.session_state:
-        st.session_state.inference_model = None
+        st.session_state.inference_model_name = None
     
     if "embedding_model_name" not in st.session_state:
         st.session_state.embedding_model_name = None
@@ -41,12 +39,19 @@ def handle_chat_input(prompt):
             st.session_state.inference_model_name = config_provider.get_default_inference_model()
         inference_model_name = st.session_state.inference_model_name
         app_manager = st.session_state.app_manager
-        response = app_manager.make_question(document, question, embedding_model_name, inference_model_name)
+        if (config_provider.use_faiss()):
+            response = app_manager.make_question_using_faiss(document, question, embedding_model_name, inference_model_name)
+        else:
+            response = app_manager.make_question(document, question, embedding_model_name, inference_model_name)
         st.markdown(str(response))
 
 def add_document(uploaded_file):
     app_manager = st.session_state.app_manager
-    app_manager.add_document(uploaded_file, st.session_state.embedding_model)
+    if (config_provider.use_faiss()):
+        app_manager.add_document_using_faiss(uploaded_file, st.session_state.embedding_model)
+    else:
+        print("no")
+        app_manager.add_document(uploaded_file, st.session_state.embedding_model)
 
 def get_available_documents():
     app_manager = st.session_state.app_manager
@@ -81,19 +86,30 @@ def display_document_selection():
 def select_model_and_document():
     #if st.button("Upload Document"):
         with st.form("Select model and document"):
-            st.subheader('Inference model')
-            inference_model_name = display_inference_model_selection()
-            st.subheader('Document')
-            document = display_document_selection()
+            if (not config_provider.use_faiss()):
+
+                st.subheader('Inference model')
+                inference_model_name = display_inference_model_selection()
+                st.subheader('Document')
+                document = display_document_selection()
 
 
-            if st.form_submit_button("Confirm selection"):
-                if "inference_model_name" not in st.session_state or st.session_state.inference_model_name is None:
-                    st.session_state.inference_model_name = inference_model_name
+                if st.form_submit_button("Confirm selection"):
+                    if "inference_model_name" not in st.session_state or st.session_state.inference_model_name is None:
+                        st.session_state.inference_model_name = inference_model_name
+                    
+                    if "selected_document" not in st.session_state or st.session_state.selected_document is None:
+                        st.session_state.selected_document = document
+                        st.session_state.embedding_model_name = document[2]
+            else:
+                st.subheader('Inference model')
+                inference_model_name = display_inference_model_selection()
                 
-                if "selected_document" not in st.session_state or st.session_state.selected_document is None:
-                    st.session_state.selected_document = document
-                    st.session_state.embedding_model_name = document[2]
+
+                if st.form_submit_button("Confirm selection"):
+                    if "inference_model_name" not in st.session_state or st.session_state.inference_model_name is None:
+                        st.session_state.inference_model_name = inference_model_name
+
 
 
 
@@ -114,25 +130,24 @@ def print_in_main():
 def upload_document():
     #if st.button("Upload Document"):
         with st.form("Upload file"):
-            st.subheader('Embedding model')
-            embedding_model_name = display_embedding_model_selection()
-            st.subheader('Splitter model')
-            splitter = display_splitter_selection()
-            st.subheader('Upload file')
-            uploaded_file = file_upload_and_input()
+                st.subheader('Embedding model')
+                embedding_model_name = display_embedding_model_selection()
+                st.subheader('Splitter model')
+                splitter = display_splitter_selection()
+                st.subheader('Upload file')
+                uploaded_file = file_upload_and_input()
 
-            if st.form_submit_button("Confirm"):
-                st.markdown("## Chat History")
-                if "embedding_model_name" not in st.session_state or st.session_state.embedding_model_name is None:
-                    st.session_state.embedding_model_name = embedding_model_name
+                if st.form_submit_button("Confirm"):
+                    if "embedding_model_name" not in st.session_state or st.session_state.embedding_model_name is None:
+                        st.session_state.embedding_model_name = embedding_model_name
 
-                if "selected_document" not in st.session_state or st.session_state.selected_document is None:
-                    st.session_state.selected_document = uploaded_file
-                        
-                if "splitter_model" not in st.session_state or st.session_state.splitter_model is None:
-                    st.session_state.splitter_model = splitter
-                
-                process_file_upload()
+                    if "selected_document" not in st.session_state or st.session_state.selected_document is None:
+                        st.session_state.selected_document = uploaded_file
+                            
+                    if "splitter_model" not in st.session_state or st.session_state.splitter_model is None:
+                        st.session_state.splitter_model = splitter
+                    process_file_upload()
+            
 
 
 def process_file_upload():
@@ -140,7 +155,10 @@ def process_file_upload():
     model_name = st.session_state.embedding_model_name
     splitter = st.session_state.splitter_model
     app_manager = st.session_state.app_manager
-    app_manager.add_document(file, model_name, splitter)
+    if (config_provider.use_faiss()):
+        app_manager.add_document_using_faiss(file, model_name, splitter)
+    else:
+        app_manager.add_document(file, model_name, splitter)
    
 
 # def display_chat_messages():
