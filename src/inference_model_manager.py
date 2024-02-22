@@ -9,7 +9,7 @@ from src.config.config_provider import ConfigProvider
 class TextGenerationSingleton:
     _instance = None
 
-    def __new__(cls, model_id, use_api_key = False):
+    def __new__(cls, model_id, use_api_key = True):
         if cls._instance is None:
             cls._instance = super(TextGenerationSingleton, cls).__new__(cls)
             config_provider = ConfigProvider()
@@ -21,11 +21,11 @@ class TextGenerationSingleton:
             # top_k = 35
             # top_p = 0.95
             if (use_api_key):
-                print ("pidiendo con apik")
                 api_token = os.getenv('HF_TOKEN')
                 cls._instance.hf_pipeline = HuggingFaceHub(
                     huggingfacehub_api_token= api_token,
                     repo_id= model_id,
+                    
                     model_kwargs={
                         "temperature": temperature,
                         "max_new_tokens": max_new_tokens,

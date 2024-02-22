@@ -52,10 +52,26 @@ class PosgresManager:
                 table_create_command = """
                 CREATE TABLE IF NOT EXISTS {} (
                     id SERIAL PRIMARY KEY,
-                    nombre VARCHAR(255)
+                    doc VARCHAR(255),
+                    emb_model VARCHAR(255),
+                    splitter VARCHAR(255)
                 );
                 """.format(name)
                 cur.execute(table_create_command)
+                conn.commit()
+        finally:
+            self.release_connection(conn)
+    def insert_tabular_data(self, name,embed_model,splitter, table_name = 'index'):
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                insert_command = """
+                INSERT INTO {} (doc,emb_model,splitter) VALUES (%s,%s,%s);
+                """.format(table_name)
+
+                cur.execute(insert_command, (name,embed_model,splitter))
+
+                
                 conn.commit()
         finally:
             self.release_connection(conn)
@@ -68,8 +84,8 @@ class PosgresManager:
             with conn.cursor() as cur:
                 table_create_command = """
                 CREATE TABLE IF NOT EXISTS {} (
-                    title text,
-                    embedding vector({})
+                    "title" text,
+                    "embedding" vector({})
                 );
                 """.format(name, dimension)
                 cur.execute(table_create_command)
@@ -77,30 +93,18 @@ class PosgresManager:
         finally:
             self.release_connection(conn)
 
-    def insert_tabular_data(self, name, table_name = 'index'):
-        conn = self.get_connection()
-        try:
-            with conn.cursor() as cur:
-                insert_command = """
-                INSERT INTO {} (nombre) VALUES (%s);
-                """.format(table_name)
-
-                cur.execute(insert_command, (name,))
-                conn.commit()
-        finally:
-            self.release_connection(conn)
+   
 
 
-    def get_index_by_name(self,  name, table_name ='index'):
-      
+    def get_index_by_name(self, doc, embed_model, splitter, table_name='index'):
         conn = self.get_connection()
         try:
             with conn.cursor() as cur:
                 select_command = """
-                SELECT id FROM {} WHERE nombre = %s;
+                SELECT id FROM {} WHERE doc = %s AND emb_model = %s AND splitter = %s;
                 """.format(table_name)
 
-                cur.execute(select_command, (name,))
+                cur.execute(select_command, (doc, embed_model, splitter))
                 result = cur.fetchone()
 
                 if result:
@@ -109,6 +113,7 @@ class PosgresManager:
                     return None
         finally:
             self.release_connection(conn)
+
 
 
     def insert_data(self, data, table_name):
